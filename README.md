@@ -1,6 +1,8 @@
 # Spider Solitaire 1 suit
 <a href="https://codeclimate.com/github/demeena/spider-solitaire/maintainability"><img src="https://api.codeclimate.com/v1/badges/666096370a32895396fc/maintainability" /></a>
+## Demo
 
+Check out the live demo of the application:https://demeena.github.io/spider-solitaire/
 
 Spider Solitaire (One Suit)
 Spider Solitaire is a popular card game with the objective to remove all cards from the field. This version uses only one suit, making it simpler and more accessible for beginners. Below are the rules and gameplay instructions for this variant.
