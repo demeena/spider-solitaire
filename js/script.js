@@ -1,5 +1,7 @@
+import { isCompleteSequence, initialDeal, parseId } from './scratch.js';
+
 const suits = ['s', 'h', 'c', 'd'];
-const values = Array.from({length: 13}, (_, i) => i + 1);
+const values = Array.from({ length: 13 }, (_, i) => i + 1);
 
 const suitPath = {
   's': "card-deck-css/images/spades/",
@@ -13,9 +15,9 @@ let noOfSuits = 1;
 let suitsInPlay = suits.slice(0, noOfSuits);
 let noOfDecks = 2;
 let deck = [];
-let columns = Array.from({length: 10}, () => []);
+let columns = Array.from({ length: 10 }, () => []);
 let moveStack = [];
-let home = Array.from({length: 8}, () => []);
+let home = Array.from({ length: 8 }, () => []);
 let moveCounter = 0;
 
 document.querySelector('#deck').addEventListener('click', dealMore);
@@ -24,7 +26,9 @@ document.querySelector('#hint-button').addEventListener('click', suggestMove);
 function init() {
   buildDeck();
   shuffleDeck();
-  initialDeal();
+  initialDeal(deck, columns); 
+  console.log("Deck after initial deal:", deck);
+  renderInitialDeal();
 
   document.querySelector('#new-game-button').addEventListener('click', () => window.location.reload());
   document.querySelector('#undo-button').addEventListener('click', undoMove);
@@ -42,6 +46,7 @@ function buildDeck() {
   for (let i = 0; i < repeat; i++) {
     addSuitsToDeck(suitsInPlay, values);
   }
+  console.log("Deck built:", deck);
 }
 
 function addSuitsToDeck(suits, values) {
@@ -56,17 +61,12 @@ function addValuesToDeck(suit, values) {
   });
 }
 
-
 function shuffleDeck() {
   for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [deck[i], deck[j]] = [deck[j], deck[i]];
   }
-}
-
-function initialDeal() {
-  dealCards(44, false);
-  dealCards(10, true);
+  console.log("Deck shuffled:", deck);
 }
 
 function createCardElement(card, isFaceUp) {
@@ -76,8 +76,21 @@ function createCardElement(card, isFaceUp) {
   newCard.src = isFaceUp ? `${suitPath[card.suit]}${newCard.id}.svg` : suitPath['b'];
   newCard.draggable = true;
   addDragEvents(newCard);
+  console.log("Card element created:", newCard); // Добавьте этот лог для проверки
   return newCard;
 }
+
+function renderInitialDeal() {
+  columns.forEach((column, colIdx) => {
+    column.forEach((card, cardIdx) => {
+      const isFaceUp = cardIdx === column.length - 1;
+      const cardElement = createCardElement(card, isFaceUp);
+      document.querySelector(`.column#c0${colIdx}`).appendChild(cardElement);
+    });
+  });
+  console.log("Initial cards rendered in columns:", columns);
+}
+
 
 function dealCards(count, isFaceUp) {
   let colIdx = 0;
@@ -188,7 +201,16 @@ function moveCards(dragData, dropZone) {
     dropZone.appendChild(card);
     card.style.visibility = "visible";
   });
+
+  const remainingCards = Array.from(sourceColumn.children);
+  if (remainingCards.length > 0) {
+    const lastCard = remainingCards[remainingCards.length - 1];
+    lastCard.src = `${suitPath[parseId(lastCard.id).suit]}${lastCard.id}.svg`;
+    lastCard.classList.remove('fd');
+    lastCard.classList.add('fu');
+  }
 }
+
 
 function handleDragEnd(evt) {
   evt.target.style.visibility = "visible";
@@ -208,10 +230,6 @@ function removeCompleteSequence(column) {
   }
 }
 
-function isCompleteSequence(cards) {
-  return cards.every((card, index) => parseId(card.id).value === 13 - index);
-}
-
 function removeCards(cards) {
   cards.forEach(card => card.remove());
 }
@@ -224,11 +242,6 @@ function updateHomeWrapper() {
     emptyHome.classList.remove('empty');
     emptyHome.classList.add('done', 'card', 'large');
   }
-}
-
-
-function isCompleteSequence(cards) {
-  return cards.every((card, index) => parseId(card.id).value === 13 - index);
 }
 
 function updateData() {
@@ -256,11 +269,6 @@ function flipCard() {
       col.lastChild.classList.add('fu');
     }
   });
-}
-
-function parseId(cardId) {
-  const [suit, value] = cardId.split('-');
-  return { suit, value: parseInt(value) };
 }
 
 function undoMove() {
