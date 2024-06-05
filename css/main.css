@@ -3,8 +3,8 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  width: 100vw;
+  height: 1600px;
+  width: 1600px;
   margin: 0;
   overflow: hidden;
   font-family: Helvetica, sans-serif;
@@ -63,7 +63,7 @@ h3 {
 #top {
   display: flex;
   justify-content: space-between;
-  width: 1600px;
+  width: 1500px;
   padding: 10px;
   box-sizing: border-box;
 }
