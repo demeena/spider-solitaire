@@ -40,13 +40,22 @@ function init() {
 function buildDeck() {
   let repeat = (4 / noOfSuits) * noOfDecks;
   for (let i = 0; i < repeat; i++) {
-    for (let suit of suitsInPlay) {
-      for (let value of values) {
-        deck.push({ suit, value });
-      }
-    }
+    addSuitsToDeck(suitsInPlay, values);
   }
 }
+
+function addSuitsToDeck(suits, values) {
+  suits.forEach(suit => {
+    addValuesToDeck(suit, values);
+  });
+}
+
+function addValuesToDeck(suit, values) {
+  values.forEach(value => {
+    deck.push({ suit, value });
+  });
+}
+
 
 function shuffleDeck() {
   for (let i = deck.length - 1; i > 0; i--) {
@@ -192,18 +201,31 @@ function removeCompleteSequence(column) {
   for (let i = 0; i <= cards.length - 13; i++) {
     const sequence = cards.slice(i, i + 13);
     if (isCompleteSequence(sequence)) {
-      sequence.forEach(card => card.remove());
-      const homeWrapper = document.querySelector('.home-wrapper');
-      const emptyHome = homeWrapper.querySelector('.empty');
-      if (emptyHome) {
-        emptyHome.src = "card-deck-css/images/spades/s-13.svg";
-        emptyHome.classList.remove('empty');
-        emptyHome.classList.add('done', 'card', 'large');
-      }
+      removeCards(sequence);
+      updateHomeWrapper();
       return;
     }
   }
 }
+
+function isCompleteSequence(cards) {
+  return cards.every((card, index) => parseId(card.id).value === 13 - index);
+}
+
+function removeCards(cards) {
+  cards.forEach(card => card.remove());
+}
+
+function updateHomeWrapper() {
+  const homeWrapper = document.querySelector('.home-wrapper');
+  const emptyHome = homeWrapper.querySelector('.empty');
+  if (emptyHome) {
+    emptyHome.src = "card-deck-css/images/spades/s-13.svg";
+    emptyHome.classList.remove('empty');
+    emptyHome.classList.add('done', 'card', 'large');
+  }
+}
+
 
 function isCompleteSequence(cards) {
   return cards.every((card, index) => parseId(card.id).value === 13 - index);
